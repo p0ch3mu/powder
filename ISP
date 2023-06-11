@@ -1,0 +1,95 @@
+|IP|
+nmtui
+  |internet: 3.3.3.1/24
+  |vmnet:    automatic
+  |ext-r:    5.5.5.1/24
+  |ext-l:    4.4.4.1/24
+
+nano /etc/sysctl.conf
+  |net.ipv4.ip_forward=1
+sysctl -p
+
+nano /etc/resolv.conf
+  |nameserver 8.8.8.8
+
+|NAT|
+nano /etc/nftables.conf
+  |table ip nat {
+  |  chain posrouting {
+  |    type nat hook postrouting priority 0;
+  |    ip saddr 0.0.0.0/0 oifname ens192 counter masquerade;
+  |  }
+  |}
+nft -f /etc/nftables.conf
+systemctl enable --now nftables
+
+|DNS|
+apt install bind9
+nano /etc/bind/named.conf.default-zones
+  |zone "demo.wsr" {
+  |  type master;
+  |  file "/etc/bind/demo.wsr";
+  |  forwarders {};
+  |};
+  
+nano /etc/bind/named.conf.options
+  |forwarders {
+  |  8.8.8.8
+  |};
+  |dnssec-validation no;
+  |recursion yes;
+  |allow-query {any;};
+  |listen-on {any;};
+
+cp /etc/bind/db.local /etc/bind/demo.wsr
+nano /etc/bind/demo.wsr
+  |$TTL    3600
+  |$ORIGIN demo.wsr.
+  |@       IN      SOA     demo.wsr. root.demo.wsr. (
+  |                   2007010401           ; Serial
+  |                         3600           ; Refresh [1h]
+  |                          600           ; Retry   [10m]
+  |                        86400           ; Expire  [1d]
+  |                          600 )         ; Negative Cache TTL [1h]
+  |;
+  |@       IN      NS      demo.wsr.
+  |@   IN  A 3.3.3.1
+  |isp IN  A 3.3.3.1
+  |www IN  A 4.4.4.100
+  |www IN  A 5.5.5.100
+  |internet  IN  CNAME isp
+  |
+  |$ORIGIN int.demo.wsr.
+  |@ IN  NS  int.demo.wsr.
+  |@ IN  A   4.4.4.100
+named-checkconf
+named-checkconf -z
+systemctl restart bind9
+systemctl enable --now bind9
+host www.demo.wsr 3.3.3.1
+
+|NTP|
+apt install chrony
+nano /etc/chrony/chrony.conf
+  |server 127.127.1.0
+  |allow 3.3.3.0/24
+  |allow 4.4.4.0/24
+  |allow 5.5.5.0/24
+  |local stratum 3
+
+systemctl enable --now chronyd
+systemctl restart chronyd
+chronyc clients
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
