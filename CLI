@@ -1,0 +1,13 @@
+|IP|
+Hostname: CLI
+IPV4:     3.3.3.100
+Netmask:  255.255.255.0
+Gateway:  3.3.3.1
+DNS:      3.3.3.1
+
+|NTP|
+GPO > Configure Windows NTP Client > Enabled > 3.3.3.1, type: NTP
+    > Enable Windows NTP Client > Enabled
+
+|Certificate root.cer|
+CMD > scp user@4.4.4.100:/home/user/root.cer C:\
