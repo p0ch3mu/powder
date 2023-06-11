@@ -1,0 +1,134 @@
+|IP|________________________________________________
+nmtui
+  |left:     192.168.106.254/24
+  |ext-l:    4.4.4.100/24
+
+nano /etc/sysctl.conf
+  |net.ipv4.ip_forward=1
+sysctl -p
+
+nano /etc/resolv.conf
+  |nameserver 192.168.106.200
+
+|NAT|________________________________________________
+nano /etc/nftables.conf
+  |table inet filter {
+  |  chain input {
+  |    type filter hook input priority 0;
+  |    udp dport 500 accept;
+  |    udp dport 53 accept;
+  |    tcp dport 80 accept;
+  |    tcp dport 443 accept;
+  |    udp dport 443 accept;
+  |    tcp dport 2222 accept;
+  |    tcp dport 22 accept;
+  |    ct state {established, related} accept;
+  |    ip protocol icmp accept;
+  |    ip protocol gre accept;
+  |    ip protocol ospf accept;
+  |    ip saddr 192.168.106.0/24 accept;
+  |    ip saddr 172.16.106.0/24 accept;
+  |    ip version 4 drop;
+  |  }
+  |}
+  |table ip nat {
+  |  chain posrouting {
+  |    type nat hook postrouting priority filter;
+  |    ip saddr 192.168.106.0/24 oifname ens224 counter masquerade;
+  |  }
+  |    chain prerouting {
+  |     type nat hook prerouting priority filter;
+        tcp dport 2222 dnat to 192.168.106.100:22;
+        iifname ens224 udp dport 53 dnat to 192.168.106.200:53;
+  |  }
+  |}
+  
+nft -f /etc/nftables.conf
+systemctl enable --now nftables
+
+|GRE-IPSEC|________________________________________________
+nano /etc/gre.up
+  |#!/bin/bash
+  |ip tunel add tun0 mode gre remote 5.5.5.100 local 4.4.4.100 ttl 64
+  |ip addr add 10.5.5.1/30 dev tun0
+  |ip link set up tun0
+  |#ip route add 172.16.106.0/24 via 10.5.5.2
+chmod +x /etc/gre.up
+crontab -e
+  |@reboot /etc/gre.up
+
+apt install strongswan
+nano /etc/ipsec.conf
+  |conn vpn
+  |  auto=start
+  |  type=tunnel
+  |  authby=secret
+  |  ike=aes128-sha256-modp3072
+  |  esp=aes128-sha256
+  |  left=4.4.4.100
+  |  right=5.5.5.100
+  |  leftprotoport=gre
+  |  rightprotoport=gre
+  |  leftsubnet=0.0.0.0/0
+  |  rightsubnet 0.0.0.0/0
+
+nano /etc/ipsec.secrets
+  |4.4.4.100 5.5.5.100 : PSK "P@ssw0rd"
+
+systemctl enable --now ipsec
+
+|NTP|________________________________________________
+apt install chrony
+nano /etc/chrony/chrony.conf
+  |server 192.168.106.200
+
+systemctl enable --now chronyd
+systemctl restart chronyd
+chronyc clients
+
+|CERTIFICATE|________________________________________________
+openssl pkcs12 -in /home/user/www.pfx -clcerts -nokeys -out www.crt
+openssl pkcs12 -in /home/user/www.pfx -nocerts -out www.key
+openssl rsa -in www.key -out www.key
+cat www.key > www.pem
+cat www.crt >> www.pem
+mkdir /root/www
+cp www.pem /root/www/
+
+|HAPROXY|________________________________________________
+apt install haproxy
+nano /etc/haproxy/haproxy.cfg
+  |frontend www.demo.wsr
+  |  bind 4.4.4.100:80
+  |  bind 4.4.4.100:443 ssl crt /root/www/www.pem
+  |  http-request redirect scheme https unless {ssl_fc}
+  |  default_backend web
+  |backend web
+  |  balance roundrobin
+  |  option httpchk
+  |  server web-r 172.16.106.100:80 check
+  |  server web-l 192.168.106.100:80 check
+    
+systemctl enable --now haproxy
+  
+|OSPF|________________________________________________
+apt install frr
+nano /etc/frr/daemons
+  |ospfd=yes
+
+systemctl restart frr
+systemctl enable --now frr
+vtysh
+  |conf t
+  |router ospf
+  |network 192.168.106.0/24 area 0
+  |network 10.5.5.0/30 area 0
+  |do wr
+
+
+
+
+
+
+
+
