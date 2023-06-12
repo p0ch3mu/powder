@@ -33,3 +33,14 @@ tar -xvf appdockerdemo.tar.gz
 cat Readme.txt
 docker image load -i appdocker0.zip
 docker run -d -p 80:5000 appdocker0
+
+|SAMBA|______________________________________________
+apt install cifs-utils
+mkdir /opt/share
+nano /etc/fstab
+    |//192.168.200.200/shares /opt/share cifs defaults,credentials=/etc/pass,_netdev 0 0
+nano /etc/pass
+    |username=Administrator
+    |password=P@ssw0rd
+mount -a
+df -h
