@@ -1,0 +1,35 @@
+|IPv4|____________________________________________
+IP:       192.168.106.100/24
+Gateway:  192.168.106.254
+DNS:      192.168.106.200
+
+|NTP|____________________________________________
+nano /etc/chrony/chrony.conf
+  |server 192.168.106.200
+systemctl restart chrony
+systemctl enable --now chrony
+
+|iSCSI|_______________________________________________
+apt install open-iscsi
+nano /etc/iscsi/iscsid.conf
+  |node.startup = automatic
+systemctl restart iscsid
+iscsiadm -m discovery -t sendtargets -p 192.168.106.200
+iscsiadm --mode node --targetname "iqn.1991-05.com.microsoft:srv-web-l-target" --portal 192.168.106.200 --login
+mkfs.ext4 /dev/sdb
+mkdir /mnt/iscsi
+mount /dev/sdb /mnt/iscsi
+nano /etc/fstab
+  |/dev/sdb   /mnt/iscsi    ext4    defaults    0   0
+systemctl enable --now iscsi
+df --all
+
+|DOCKER|____________________________________________
+apt install docker docker.io
+mkdir /mnt/docker
+mount /dev/sr1 /mnt/docker
+cp /mnt/docker/appdockerdemo.tar.gz /root/
+tar -xvf appdockerdemo.tar.gz
+cat Readme.txt
+docker image load -i appdocker0.zip
+docker run -d -p 80:5000 appdocker0
