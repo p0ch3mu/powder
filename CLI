@@ -11,3 +11,5 @@ GPO > Configure Windows NTP Client > Enabled > 3.3.3.1, type: NTP
 
 |Certificate root.cer|
 CMD > scp user@4.4.4.100:/home/user/root.cer C:\
+double click > install certificate
+Local Machine -> Place all certificates in the following -> Trusted Root Cert Auth
