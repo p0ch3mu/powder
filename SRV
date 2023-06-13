@@ -1,13 +1,13 @@
 |IPV4|____________________________________________
-IP:       192.168.106.200/24
-Gateway:  192.168.106.254
+IP:       192.168.100.200/24
+Gateway:  192.168.100.254
 DNS:      127.0.0.1
 
 |DNS|____________________________________________
 Add Roles and Features -> Active Directory Domain Services
 Add a new forest -> int.demo.wsr
 Tools -> DNS Manager -> SRV -> Reverse Lookup Zones -> New Zone...
-Networkd ID - 172.16.100, 192.168.200
+Networkd ID - 172.16.100, 192.168.100
 SRV -> Forward Lookup Zones -> int.demo.wsr -> New Host A, CNAME
 
 |NTP|____________________________________________
@@ -18,7 +18,7 @@ Edit
 Computer Configuration > Policies > Administrative Templates > System > Windows Time
 Service > Time providers > 
 - Configure Windows NTP Client:
-      NtpServer: 4.4.4.1
+      NtpServer: 7.7.7.1
       Type: NTP
 - Enable Win NTP Client
 - Enable Win NTP Server
@@ -51,8 +51,8 @@ Subject
     O=DEMO.WSR
     
     DNS: www.demo.wsr
-    IP: 4.4.4.100
-        5.5.5.100
+    IP: 7.7.7.100
+        8.8.8.100
 mmc -> RootCA -> All Tasks -> Export... -> Shares\Shares\root
        www.demo.wsr -> All Tasks -> Export... -> yes export keys -> 
        export all ext prop -> password: 1 -> Shares\Shares\www
