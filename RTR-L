@@ -102,7 +102,7 @@ nano /etc/haproxy/haproxy.cfg
   |frontend www.demo.wsr
   |  bind 7.7.7.100:80
   |  bind 7.7.7.100:443 ssl crt /root/www/www.pem
-  |  http-request redirect scheme https unless {ssl_fc}
+  |  http-request redirect scheme https unless { ssl_fc }
   |  default_backend web
   |backend web
   |  balance roundrobin
