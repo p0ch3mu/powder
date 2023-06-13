@@ -2,8 +2,8 @@
 nmtui
   |internet: 3.3.3.1/24
   |vmnet:    automatic
-  |ext-r:    5.5.5.1/24
-  |ext-l:    4.4.4.1/24
+  |ext-r:    8.8.8.1/24
+  |ext-l:    7.7.7.1/24
 
 nano /etc/sysctl.conf
   |net.ipv4.ip_forward=1
@@ -55,13 +55,13 @@ nano /etc/bind/demo.wsr
   |@       IN      NS      demo.wsr.
   |@   IN  A 3.3.3.1
   |isp IN  A 3.3.3.1
-  |www IN  A 4.4.4.100
-  |www IN  A 5.5.5.100
+  |www IN  A 7.7.7.100
+  |www IN  A 8.8.8.100
   |internet  IN  CNAME isp
   |
   |$ORIGIN int.demo.wsr.
   |@ IN  NS  int.demo.wsr.
-  |@ IN  A   4.4.4.100
+  |@ IN  A   7.7.7.100
 named-checkconf
 named-checkconf -z
 systemctl restart bind9
@@ -73,8 +73,8 @@ apt install chrony
 nano /etc/chrony/chrony.conf
   |server 127.127.1.0
   |allow 3.3.3.0/24
-  |allow 4.4.4.0/24
-  |allow 5.5.5.0/24
+  |allow 7.7.7.0/24
+  |allow 8.8.8.0/24
   |local stratum 3
 
 systemctl enable --now chronyd
