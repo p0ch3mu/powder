@@ -6,8 +6,15 @@ Gateway:  3.3.3.1
 DNS:      3.3.3.1
 
 |NTP|
-GPO > Configure Windows NTP Client > Enabled > 3.3.3.1, type: NTP
-    > Enable Windows NTP Client > Enabled
+            GPO > Configure Windows NTP Client > Enabled > 3.3.3.1, type: NTP
+                 > Enable Windows NTP Client > Enabled
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters
+    NtpServer: 3.3.3.1
+net stop w32time
+net start w32time
+ w32tm /resync /rediscover
+ w32tm /query /status
 
 |Certificate root.cer|
 CMD > scp user@7.7.7.100:/home/user/root.cer ./
