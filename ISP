@@ -75,7 +75,7 @@ nano /etc/chrony/chrony.conf
   |allow 3.3.3.0/24
   |allow 7.7.7.0/24
   |allow 8.8.8.0/24
-  |local stratum 3
+  |local stratum 4
 
 systemctl enable --now chronyd
 systemctl restart chronyd
