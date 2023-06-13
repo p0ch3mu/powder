@@ -1,11 +1,11 @@
 |IPv4|____________________________________________
-IP:       192.168.106.100/24
-Gateway:  192.168.106.254
-DNS:      192.168.106.200
+IP:       192.168.100.100/24
+Gateway:  192.168.100.254
+DNS:      192.168.100.200
 
 |NTP|____________________________________________
 nano /etc/chrony/chrony.conf
-  |server 192.168.106.200
+  |server 192.168.100.200
 systemctl restart chrony
 systemctl enable --now chrony
 
@@ -14,8 +14,8 @@ apt install open-iscsi
 nano /etc/iscsi/iscsid.conf
   |node.startup = automatic
 systemctl restart iscsid
-iscsiadm -m discovery -t sendtargets -p 192.168.106.200
-iscsiadm --mode node --targetname "iqn.1991-05.com.microsoft:srv-web-l-target" --portal 192.168.106.200 --login
+iscsiadm -m discovery -t sendtargets -p 192.168.100.200
+iscsiadm --mode node --targetname "iqn.1991-05.com.microsoft:srv-web-l-target" --portal 192.168.100.200 --login
 mkfs.ext4 /dev/sdb
 mkdir /mnt/iscsi
 mount /dev/sdb /mnt/iscsi
