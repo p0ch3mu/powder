@@ -10,7 +10,7 @@ GPO > Configure Windows NTP Client > Enabled > 3.3.3.1, type: NTP
     > Enable Windows NTP Client > Enabled
 
 |Certificate root.cer|
-CMD > scp user@4.4.4.100:/home/user/root.cer ./
+CMD > scp user@7.7.7.100:/home/user/root.cer ./
 PKM > Install Certificate > Local Machine > Place all certificates in the following store > 
 > Trusted Root CA
 Check > https://www.demo.wsr
