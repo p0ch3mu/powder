@@ -1,11 +1,11 @@
 |IPv4|____________________________________________
-IP:       172.16.106.100/24
-Gateway:  172.16.106.254
-DNS:      192.168.106.200
+IP:       172.16.100.100/24
+Gateway:  172.16.100.254
+DNS:      192.168.100.200
 
 |NTP|____________________________________________
 nano /etc/chrony/chrony.conf
-  |server 192.168.106.200
+  |server 192.168.100.200
 systemctl restart chrony
 systemctl enable --now chrony
 
@@ -23,7 +23,7 @@ docker run -d -p 80:5000 appdocker0
 apt install cifs-utils
 mkdir /opt/share
 nano /etc/fstab
-    |//192.168.200.200/shares /opt/share cifs defaults,credentials=/etc/pass,_netdev 0 0
+    |//192.168.100.200/shares /opt/share cifs defaults,credentials=/etc/pass,_netdev 0 0
 nano /etc/pass
     |username=Administrator
     |password=P@ssw0rd
