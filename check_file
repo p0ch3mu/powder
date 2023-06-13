@@ -1,0 +1,7 @@
+SSH ports check
+ISP# ssh user@7.7.7.100 -p 2222
+ISP# ssh user@8.8.8.100 -p 2244
+
+DNS ISP check
+WEB-L# host demo.wsr 3.3.3.1
+WEB-L# host isp.demo.wsr 3.3.3.1
